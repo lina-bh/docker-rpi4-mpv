@@ -1,0 +1,6 @@
+-Dcuda-hwaccel=disabled
+-Dcuda-interop=disabled
+-Dvaapi=disabled
+-Ddvbin=disabled
+-Dcplugins=disabled
+-Dlcms2=disabled

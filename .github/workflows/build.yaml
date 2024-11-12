@@ -1,0 +1,32 @@
+name: Build and push
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install qemu-user-aarch64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+      - name: Build container image
+        id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          archs: arm64
+          image: ${{ github.event.repository.name }}
+          tags: latest ${{ github.sha }}
+          containerfiles: ./Dockerfile
+          build-args: |
+            jobs=4
+      - name: Push to ghcr
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ghcr.io/lina-bh
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
